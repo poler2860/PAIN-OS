@@ -7,11 +7,8 @@ mov     al, 7
 int 10h
 
 ; Set buffer for writing
-k_buf   times  40   db  0
+; k_buf   times  40   db  0
 
-l1:
-    call    keypress_to_screen
-    jmp     l1
 
 ; End program
 jmp     fill
@@ -25,7 +22,7 @@ jmp     fill
 ; ( But probably it will be rewritten better anyways )
 ; Display keystrokes to screen
 ; Also saves them to a buffer
-keypress_to_screen:
+; keypress_to_screen:
     ; ; Save registers to stack
     ; push    eax
     ; push    ecx
