@@ -20,49 +20,52 @@ jmp     fill
 ; ---------- Functions -----------
 ; --------------------------------
 
+; NOTE: Not needed for the project. Just to test input handling in the BIOS
+; Staying here just in case this funtionality is needed
+; ( But probably it will be rewritten better anyways )
 ; Display keystrokes to screen
 ; Also saves them to a buffer
 keypress_to_screen:
-    ; Save registers to stack
-    push    eax
-    push    ecx
-    push    esi
+    ; ; Save registers to stack
+    ; push    eax
+    ; push    ecx
+    ; push    esi
 
-    ; Setup registers
-    xor     ah, ah
-    mov     cx, 40                  ; To be used as counter
-    mov     esi, k_buf              ; Set it to the start of the buffer
+    ; ; Setup registers
+    ; xor     ah, ah
+    ; mov     cx, 40                  ; To be used as counter
+    ; mov     esi, k_buf              ; Set it to the start of the buffer
 
 
-    ; Write keystoke to screen
-    k2s_kpress:
-        ; Exit if enter is pressed
-        cmp     al, 0x0D
-        je      k2s_exit
+    ; ; Write keystoke to screen
+    ; k2s_kpress:
+    ;     ; Exit if enter is pressed
+    ;     cmp     al, 0x0D
+    ;     je      k2s_exit
 
-        ; Read char
-        xor     ah, ah
-        int 16h
+    ;     ; Read char
+    ;     xor     ah, ah
+    ;     int 16h
 
-        mov     [esi],  al          ; Save to buffer
-        call    string_to_screen    ; Display character
+    ;     mov     [esi],  al          ; Save to buffer
+    ;     call    string_to_screen    ; Display character
 
-        dec     cx
-        inc     esi
-        cmp     cx, 1
-        jne     k2s_kpress          ; Continue if there is still space in the buffer
+    ;     dec     cx
+    ;     inc     esi
+    ;     cmp     cx, 1
+    ;     jne     k2s_kpress          ; Continue if there is still space in the buffer
 
-    k2s_exit:
-        mov     ah, 0x0E
-        mov     al, 0x0A
-        int 10h
+    ; k2s_exit:
+    ;     mov     ah, 0x0E
+    ;     mov     al, 0x0A
+    ;     int 10h
 
-        ; Restore registers
-        pop     esi
-        pop     ecx
-        pop     eax
+    ;     ; Restore registers
+    ;     pop     esi
+    ;     pop     ecx
+    ;     pop     eax
 
-        ret
+    ;     ret
 
 ; Function to write string to screen
 ; esi: Starting address of string to print to the screen
