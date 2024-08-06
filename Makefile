@@ -1,3 +1,4 @@
+
 all: binary run
 
 binary: src/bootloader/boot.asm
