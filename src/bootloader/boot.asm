@@ -1,17 +1,19 @@
 ; Set origin after the the BIOS table
 [org 7c00h]
 
-; Set video mode to VGA something X something(but in Y axis)
-mov     ah, 0
-mov     al, 7
-int 10h
 
-; Set buffer for writing
-; k_buf   times  40   db  0
+section .text 
 
-
-; End program
-jmp     fill
+; Set video mode to VGA something X something
+    mov     ah, 0
+    mov     al, 7
+    int 10h
+    
+    
+    
+    
+    ; Make it bootable
+    jmp     fill
 
 ; --------------------------------
 ; ---------- Functions -----------
@@ -19,7 +21,7 @@ jmp     fill
 
 ; NOTE: Not needed for the project. Just to test input handling in the BIOS
 ; Staying here just in case this funtionality is needed
-; ( But probably it will be rewritten better anyways )
+; ( But probably it will be rewritten anyways )
 ; Display keystrokes to screen
 ; Also saves them to a buffer
 ; keypress_to_screen:
@@ -95,7 +97,7 @@ string_to_screen:
         ret
 
 
-; Fill the rest of the 512 bytes with zeros and make the sector bootable
+; Fill the rest of the 512 bytes but the last 4 bytes with zeros and make the sector bootable
 fill:
     times 510-($-$$) db 0
     db 0x55, 0xAA
