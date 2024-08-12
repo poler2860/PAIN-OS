@@ -1,6 +1,10 @@
 { pkgs ? import <nixpkgs> {} }:
 
 pkgs.mkShell {
+
+    # Ensure we have a clean enviroment
+	pure = true;
+
 	buildInputs = [
 	# Packages to be installed
 		pkgs.git
@@ -13,8 +17,4 @@ pkgs.mkShell {
 		export PATH="$PATH:$PWD/cross/bin"
 	'';
 
-	# Ensure we have a clean enviroment
-	pure = true;
-
 }
-

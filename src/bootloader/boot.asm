@@ -1,101 +1,77 @@
 ; Set origin after the the BIOS table
+[bits 16]
 [org 7c00h]
 
+; Set the location to load the kernel into the memory
+KERNEL_OFFSET   equ   0x1000
 
-section .text 
+mov     [BOOT_DRIVE], dl
 
-; Set video mode to VGA something X something
-    mov     ah, 0
-    mov     al, 7
-    int 10h
-    
-    
-    
-    
-    ; Make it bootable
-    jmp     fill
+; Setup the stack
+mov     bp, 0x9000
+mov     sp, bp
 
-; --------------------------------
-; ---------- Functions -----------
-; --------------------------------
+jmp boot
 
-; NOTE: Not needed for the project. Just to test input handling in the BIOS
-; Staying here just in case this funtionality is needed
-; ( But probably it will be rewritten anyways )
-; Display keystrokes to screen
-; Also saves them to a buffer
-; keypress_to_screen:
-    ; ; Save registers to stack
-    ; push    eax
-    ; push    ecx
-    ; push    esi
-
-    ; ; Setup registers
-    ; xor     ah, ah
-    ; mov     cx, 40                  ; To be used as counter
-    ; mov     esi, k_buf              ; Set it to the start of the buffer
+; ------ GDT ------
 
 
-    ; ; Write keystoke to screen
-    ; k2s_kpress:
-    ;     ; Exit if enter is pressed
-    ;     cmp     al, 0x0D
-    ;     je      k2s_exit
+boot:
+    cli         ; Disable all interrupts
 
-    ;     ; Read char
-    ;     xor     ah, ah
-    ;     int 16h
+    ; Setup segment registers
+    ; Using the flat protected model
+    xor     ax, ax
+    mov     ss, ax
+    mov     ds, ax
+    mov     es, ax
+    mov     fs, ax
+    mov     gs, ax
 
-    ;     mov     [esi],  al          ; Save to buffer
-    ;     call    string_to_screen    ; Display character
+    mov     ax, 0xFFFFFFFF
+    mov     cs, ax
 
-    ;     dec     cx
-    ;     inc     esi
-    ;     cmp     cx, 1
-    ;     jne     k2s_kpress          ; Continue if there is still space in the buffer
+    hlt
 
-    ; k2s_exit:
-    ;     mov     ah, 0x0E
-    ;     mov     al, 0x0A
-    ;     int 10h
+load_kernel:
+; TODO: kernel load
+; What did you expect
 
-    ;     ; Restore registers
-    ;     pop     esi
-    ;     pop     ecx
-    ;     pop     eax
 
-    ;     ret
+; DL is inserted as a parameter
+disk_read:
+    pusha
+    push    dx                      ; Save number of sectors to read
 
-; Function to write string to screen
-; esi: Starting address of string to print to the screen
-; bh: Page number ( Text modes )
-; bl: Pixel colour ( Graphics modes )
-string_to_screen:
-    ; Save registers to be used
-    push    eax
-    push    esi
+    ; Read sector into memory
+    mov     ah, 0x2                 ; Disk read function code
+    mov     al, 0x2                 ; Sectors to read
 
-    ; Setup registers for character writing
-    mov     ah, 0xE
+    mov     ch, 0x0                 ; (Lower 8 bits) cylinder number
+    mov     cl, 0x2                 ; Sector number
+    mov     dh, 0x0                 ; Head number
+    int     13h
+    jc      disk_error              ; Check carry bit for disk read error
 
-    ; Loop for writing the string
-    w_char:
-        mov     al, [esi]           ; Move through the string
-        cmp     al, 0               ; Check if we are at the null terminator
-        je      w_end               ; exit write function if at null terminator
-        int     10h
+    pop     dx                      ; Get the origial number of sector to read
+    cmp     al, dh                  ; Compare the sectors actuall read
+                                    ; to the sectors wanted to read
+    jne     sectors_error           ; Re-read the sectors if we could not read all the sectors
 
-        inc     esi                 ; Go to the next char in the string
-        jmp     w_char
+    popa
+    ret
 
-    ; Return to the previous address
-    w_end:
-        ; Restore registers
-        pop     esi
-        pop     eax
+disk_error:
+    jmp     disk_loop
 
-        ret
+sectors_error:
+    jmp     disk_loop
 
+disk_loop:
+    jmp     $
+
+
+BOOT_DRIVE  db  0                   ; Set boot drive number
 
 ; Fill the rest of the 512 bytes but the last 4 bytes with zeros and make the sector bootable
 fill:
