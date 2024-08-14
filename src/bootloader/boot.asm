@@ -20,8 +20,8 @@ boot:
 
     call    load_kernel
     call    switch_to_32bit
+    call    BEGIN_32bit
 
-    call BEGIN_32bit
 
 [bits 32]
 BEGIN_32BIT:

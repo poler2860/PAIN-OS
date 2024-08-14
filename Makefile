@@ -2,6 +2,9 @@ CC = i686-elf-gcc
 
 all: kernel bootloader run
 
+kernel_libs: src/kernel/include
+	$(CC)
+
 kernel: src/kernel/kernel.c
 	$(CC) -c $^ -o bin/kernel.o -std=gnu99 -ffreestanding -O2 -Wall -Wextra
 
