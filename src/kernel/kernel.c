@@ -1,16 +1,14 @@
-#include <stddef.h>
-#include <stdbool.h>
 #include <stdint.h>
+#include <stdarg.h>
 
-/* Check if the compiler thinks you are targeting the wrong operating system. */
-#if defined(__linux__)
-#error "You are not using a cross-compiler, you will most certainly run into trouble"
-#endif
+void main() {
+    char* my_msg = "Welcome to the kernel bitch!";
+    char *VGA_MEM = (char*) 0xb8000;
 
-#if !defined(__i386__)
-#error "Needs to be compiled with a ix86-elf compiler"
-#endif
+    for(uint8_t i = 0; my_msg[i] != '\0'; i++) {
+        VGA_MEM[i*2] = my_msg[i];
+        VGA_MEM[i*2 + 1] = 0x02;
+    }
 
-void kernel_main(void){
-
+    while(1);
 }

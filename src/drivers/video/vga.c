@@ -1,1 +1,1 @@
-#include "video/vga.h"
+#include "drivers/video/vga.h"
